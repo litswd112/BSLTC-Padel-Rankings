@@ -1,43 +1,183 @@
-name=docs/rankings.html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Rankings — BSLTC Padel</title>
-  <link rel="stylesheet" href="rankings.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BSLTC Padel Rankings</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0f4c81;
+    }
+
+    .search-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      width: 200px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-right: 8px;
+    }
+
+    button {
+      padding: 8px 12px;
+      background-color: #0f4c81;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #06345c;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background-color: #0f4c81;
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+
+    tr.highlight {
+      background-color: #fffae6;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    #rankingTable {
+      max-height: 70vh;
+      overflow-y: auto;
+      display: block;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #555;
+    }
+
+  </style>
 </head>
 <body>
-  <main class="container">
-    <header>
-      <h1>Rankings</h1>
-      <p class="subtitle">rankings.</p>
-    </header>
+  <h1>BSLTC Padel Player Rankings</h1>
 
-    <section id="controls" class="controls">
-      <label>Refresh interval:
-        <select id="intervalSelect">
-          <option value="15000">15s</option>
-          <option value="30000">30s</option>
-          <option value="60000" selected>60s</option>
-          <option value="300000">5m</option>
-          <option value="0">Disabled</option>
-        </select>
-      </label>
-      <button id="refreshBtn">Refresh now</button>
-    </section>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Enter player name...">
+    <button onclick="searchPlayer()">Search</button>
+  </div>
 
-    <section id="status" class="status">Loading...</section>
+  <div id="rankingTable">
+    <table id="playersTable">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Name</th>
+          <th>Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="3">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-    <ol id="rankingsList" class="rankings" aria-live="polite"></ol>
+  <div class="footer">Data automatically updates from Google Sheets.</div>
 
-    <footer class="footer">
-      <small</small>
-    </footer>
-  </main>
+  <script>
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGEXcTCNnobUXBajqAgLUi3Jnel1FH1qIwW35HDQqy3SJBVzxgoNEyAXzEyCXOuplrnzsKnpu3kkWM/pub?output=csv';
+    let players = [];
 
-  <script src="rankings.js"></script>
+    async function fetchData() {
+      try {
+        const response = await fetch(sheetUrl);
+        const data = await response.text();
+        parseCSV(data);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      }
+    }
+
+    function parseCSV(csv) {
+      const lines = csv.trim().split('\n');
+      players = lines.slice(1).map(line => {
+        const [name, points] = line.split(',');
+        return { name: name.trim(), points: Number(points) };
+      });
+
+      // Sort descending by points
+      players.sort((a, b) => b.points - a.points);
+
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector('#playersTable tbody');
+      tbody.innerHTML = '';
+
+      players.forEach((player, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${player.name}</td>
+          <td>${player.points}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function searchPlayer() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#playersTable tbody tr');
+      let found = false;
+
+      rows.forEach(row => row.classList.remove('highlight'));
+
+      players.forEach((player, index) => {
+        if (player.name.toLowerCase() === input) {
+          rows[index].classList.add('highlight');
+          rows[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+          found = true;
+        }
+      });
+
+      if (!found) alert('Player not found!');
+    }
+
+    // Initial fetch
+    fetchData();
+
+    // Refresh every 60 seconds
+    setInterval(fetchData, 60000);
+  </script>
 </body>
-
 </html>
-
