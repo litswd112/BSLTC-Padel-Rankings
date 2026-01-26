@@ -1,15 +1,3 @@
-Copilot said: Below is a ready-to-add info page (HTML
-Below is a ready-to-add info page (HTML + JS + CSS) you can drop into your repo (for example under docs/) to host and display a Google Sheets sheet with two columns: name and number. The page:
-
-reads the sheet (using Google Sheets "publish to web" / gviz JSON endpoint),
-lists rows top-to-bottom,
-automatically numbers each row with a ranking (1, 2, 3, ...),
-refreshes periodically,
-supports overriding the sheet via URL query params (so you can point the page at any published sheet without editing files).
-I include a small README with setup instructions (how to publish the sheet, get the ID, enable GitHub Pages, etc.).
-
-Files to add:
-
 name=docs/rankings.html
 <!doctype html>
 <html lang="en">
@@ -23,7 +11,7 @@ name=docs/rankings.html
   <main class="container">
     <header>
       <h1>Rankings</h1>
-      <p class="subtitle">Data pulled from a Google Sheets sheet (two columns: name, value). Rows are displayed top-to-bottom and numbered 1..N as rankings.</p>
+      <p class="subtitle">rankings.</p>
     </header>
 
     <section id="controls" class="controls">
@@ -37,7 +25,6 @@ name=docs/rankings.html
         </select>
       </label>
       <button id="refreshBtn">Refresh now</button>
-      <div class="config-hint">You can point this page at any published sheet by using query params: <code>https://docs.google.com/spreadsheets/d/e/2PACX-1vRGEXcTCNnobUXBajqAgLUi3Jnel1FH1qIwW35HDQqy3SJBVzxgoNEyAXzEyCXOuplrnzsKnpu3kkWM/pubhtml?gid=486279881&single=true</code></div>
     </section>
 
     <section id="status" class="status">Loading...</section>
@@ -45,7 +32,7 @@ name=docs/rankings.html
     <ol id="rankingsList" class="rankings" aria-live="polite"></ol>
 
     <footer class="footer">
-      <small>Make sure the Google Sheet is published to the web (or at least "anyone with the link can view"). See README.md for setup steps.</small>
+      <small</small>
     </footer>
   </main>
 
@@ -53,3 +40,4 @@ name=docs/rankings.html
 </body>
 
 </html>
+
