@@ -67,11 +67,24 @@
     }
 
     tr.highlight {
-      background-color: #fffae6;
+      background-color: #fffae6 !important;
     }
 
     tr:nth-child(even) {
       background-color: #f9f9f9;
+    }
+
+    /* Tiered shading */
+    tr.tier1 {
+      background-color: #d1e7ff; /* Top 40 */
+    }
+
+    tr.tier2 {
+      background-color: #c8f0c8; /* Next 30 (41-70) */
+    }
+
+    tr.tier3 {
+      background-color: #fff4d1; /* Remaining */
     }
 
     #rankingTable {
@@ -168,6 +181,16 @@
           <td>${players[i].name}</td>
           <td>${players[i].points}</td>
         `;
+
+        // Apply tiered shading
+        if (rank <= 40) {
+          tr.classList.add('tier1');
+        } else if (rank <= 70) {
+          tr.classList.add('tier2');
+        } else {
+          tr.classList.add('tier3');
+        }
+
         tbody.appendChild(tr);
 
         prevPoints = players[i].points;
