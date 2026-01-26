@@ -1,0 +1,54 @@
+Copilot said: Below is a ready-to-add info page (HTML
+Below is a ready-to-add info page (HTML + JS + CSS) you can drop into your repo (for example under docs/) to host and display a Google Sheets sheet with two columns: name and number. The page:
+
+reads the sheet (using Google Sheets "publish to web" / gviz JSON endpoint),
+lists rows top-to-bottom,
+automatically numbers each row with a ranking (1, 2, 3, ...),
+refreshes periodically,
+supports overriding the sheet via URL query params (so you can point the page at any published sheet without editing files).
+I include a small README with setup instructions (how to publish the sheet, get the ID, enable GitHub Pages, etc.).
+
+Files to add:
+
+name=docs/rankings.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rankings — BSLTC Padel</title>
+  <link rel="stylesheet" href="rankings.css" />
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Rankings</h1>
+      <p class="subtitle">Data pulled from a Google Sheets sheet (two columns: name, value). Rows are displayed top-to-bottom and numbered 1..N as rankings.</p>
+    </header>
+
+    <section id="controls" class="controls">
+      <label>Refresh interval:
+        <select id="intervalSelect">
+          <option value="15000">15s</option>
+          <option value="30000">30s</option>
+          <option value="60000" selected>60s</option>
+          <option value="300000">5m</option>
+          <option value="0">Disabled</option>
+        </select>
+      </label>
+      <button id="refreshBtn">Refresh now</button>
+      <div class="config-hint">You can point this page at any published sheet by using query params: <code>?id=SPREADSHEET_ID&sheet=SheetName</code></div>
+    </section>
+
+    <section id="status" class="status">Loading...</section>
+
+    <ol id="rankingsList" class="rankings" aria-live="polite"></ol>
+
+    <footer class="footer">
+      <small>Make sure the Google Sheet is published to the web (or at least "anyone with the link can view"). See README.md for setup steps.</small>
+    </footer>
+  </main>
+
+  <script src="rankings.js"></script>
+</body>
+</html>
