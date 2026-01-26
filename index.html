@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BSLTC Padel Rankings</title>
+  <title>BSLTC Padel Player Rankings</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -85,7 +85,6 @@
       margin-top: 20px;
       color: #555;
     }
-
   </style>
 </head>
 <body>
@@ -134,9 +133,6 @@
         return { name: name.trim(), points: Number(points) };
       });
 
-      // Sort descending by points
-      players.sort((a, b) => b.points - a.points);
-
       renderTable();
     }
 
@@ -144,15 +140,38 @@
       const tbody = document.querySelector('#playersTable tbody');
       tbody.innerHTML = '';
 
-      players.forEach((player, index) => {
+      if (players.length === 0) return;
+
+      // Sort by points descending, then by name ascending
+      players.sort((a, b) => {
+        if (b.points === a.points) {
+          return a.name.localeCompare(b.name);
+        }
+        return b.points - a.points;
+      });
+
+      let rank = 1;
+      let prevPoints = null;
+      let skip = 0;
+
+      for (let i = 0; i < players.length; i++) {
+        if (players[i].points === prevPoints) {
+          skip++;
+        } else {
+          rank += skip;
+          skip = 1;
+        }
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${player.name}</td>
-          <td>${player.points}</td>
+          <td>${rank}</td>
+          <td>${players[i].name}</td>
+          <td>${players[i].points}</td>
         `;
         tbody.appendChild(tr);
-      });
+
+        prevPoints = players[i].points;
+      }
     }
 
     function searchPlayer() {
