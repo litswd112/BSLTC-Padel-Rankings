@@ -159,53 +159,50 @@
     renderTable();
   }
 
-    function renderTable() {
-      const tbody = document.querySelector('#playersTable tbody');
-      tbody.innerHTML = '';
+  function renderTable() {
+    const tbody = document.querySelector('#playersTable tbody');
+    tbody.innerHTML = '';
 
-      if (players.length === 0) return;
+    if (players.length === 0) return;
 
-      // Sort by points descending, then by name ascending
-      players.sort((a, b) => {
-        if (b.points === a.points) {
-          return a.name.localeCompare(b.name);
-        }
-        return b.points - a.points;
-      });
-
-      let rank = 1;
-      let prevPoints = null;
-      let skip = 0;
-
-      for (let i = 0; i < players.length; i++) {
-        if (players[i].points === prevPoints) {
-          skip++;
-        } else {
-          rank += skip;
-          skip = 1;
-        }
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${rank}</td>
-          <td>${players[i].name}</td>
-          <td>${players[i].points}</td>
-        `;
-
-        // Apply tiered shading
-        if (rank <= 40) {
-          tr.classList.add('tier1');
-        } else if (rank <= 70) {
-          tr.classList.add('tier2');
-        } else {
-          tr.classList.add('tier3');
-        }
-
-        tbody.appendChild(tr);
-
-        prevPoints = players[i].points;
+    // Sort by points DESC, then name ASC
+    players.sort((a, b) => {
+      if (b.points === a.points) {
+        return a.name.localeCompare(b.name);
       }
-    }
+      return b.points - a.points;
+    });
+
+    let rank = 1;
+    let prevPoints = null;
+    let displayedRank = 1;
+
+    players.forEach((player, index) => {
+      if (player.points !== prevPoints) {
+        displayedRank = index + 1;
+      }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${displayedRank}</td>
+        <td>${player.name}</td>
+        <td>${player.points}</td>
+      `;
+
+      // Tier shading based on displayed rank
+      if (displayedRank <= 40) {
+        tr.classList.add('tier1');
+      } else if (displayedRank <= 70) {
+        tr.classList.add('tier2');
+      } else {
+        tr.classList.add('tier3');
+      }
+
+      tbody.appendChild(tr);
+
+      prevPoints = player.points;
+    });
+  }
 
     function searchPlayer() {
       const input = document.getElementById('searchInput').value.toLowerCase();
@@ -233,6 +230,7 @@
   </script>
 </body>
 </html>
+
 
 
 
