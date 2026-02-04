@@ -12,35 +12,96 @@
       padding: 20px;
     }
 
-    h1 {
-      text-align: center;
-      color: #0f4c81;
+    .header-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
     }
 
+    .header-banner img {
+      height: 60px;
+      width: auto;
+    }
+
+    .header-banner h1 {
+      margin: 0;
+      color: #0f4c81;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 600px) {
+      .header-banner {
+        flex-wrap: wrap;
+      }
+      .header-banner h1 {
+        white-space: normal;
+      }
+    }
+
+    /* Search box styling */
     .search-container {
       text-align: center;
       margin-bottom: 20px;
     }
 
-    input[type="text"] {
-      padding: 8px;
-      width: 200px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      margin-right: 8px;
+    .search-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #0f4c81;
     }
 
-    button {
-      padding: 8px 12px;
-      background-color: #0f4c81;
-      color: white;
-      border: none;
+    .search-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .search-box input {
+      width: 240px;
+      padding: 8px;
       border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .clear-btn {
+      background: #ccc;
+      color: #333;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 16px;
       cursor: pointer;
     }
 
-    button:hover {
-      background-color: #06345c;
+    .clear-btn:hover {
+      background: #999;
+      color: #fff;
+    }
+
+    .no-results {
+      margin-top: 8px;
+      font-weight: 600;
+      color: #b00020;
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .search-box input {
+        width: 100%;
+        font-size: 1.1rem;
+        padding: 12px;
+      }
+      .clear-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+      }
     }
 
     table {
@@ -75,17 +136,9 @@
     }
 
     /* Tiered shading */
-    tr.tier1 {
-      background-color: #d1e7ff; /* Top 40 */
-    }
-
-    tr.tier2 {
-      background-color: #c8f0c8; /* Next 30 (41-70) */
-    }
-
-    tr.tier3 {
-      background-color: #fff4d1; /* Remaining */
-    }
+    tr.tier1 { background-color: #d1e7ff; }
+    tr.tier2 { background-color: #c8f0c8; }
+    tr.tier3 { background-color: #fff4d1; }
 
     #rankingTable {
       max-height: 70vh;
@@ -98,55 +151,22 @@
       margin-top: 20px;
       color: #555;
     }
-
-.header-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.header-banner img {
-  height: 60px;      /* adjust if needed */
-  width: auto;
-}
-
-.header-banner h1 {
-  margin: 0;
-  color: #0f4c81;
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* Optional: allow wrapping on small screens */
-@media (max-width: 600px) {
-  .header-banner {
-    flex-wrap: wrap;
-  }
-
-  .header-banner h1 {
-    white-space: normal;
-  }
-}
-    
   </style>
 </head>
 <body>
-  
- <div class="header-banner">
-  <img src="https://litswd112.github.io/BSLTC-Padel-Rankings/Images/Moonshot%20(1).JPG" alt="Moonshot Logo">
-  <h1>BSLTC Padel Player Rankings</h1>
-  <img src="https://litswd112.github.io/BSLTC-Padel-Rankings/Images/Terra%20Rossa%20(1).JPG" alt="Terra Rossa Logo">
-</div>
+  <div class="header-banner">
+    <img src="https://litswd112.github.io/BSLTC-Padel-Rankings/Images/Moonshot%20(1).JPG" alt="Moonshot Logo">
+    <h1>BSLTC Padel Player Rankings</h1>
+    <img src="https://litswd112.github.io/BSLTC-Padel-Rankings/Images/Terra%20Rossa%20(1).JPG" alt="Terra Rossa Logo">
+  </div>
 
   <div class="search-container">
-  <input
-  type="text"
-  id="searchInput"
-  placeholder="Start typing a player name..."
-  oninput="filterPlayers()">
-
+    <label for="searchInput" class="search-label">Search Player</label>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Type a name…" oninput="filterPlayers()" onkeydown="handleSearchKeys(event)">
+      <button type="button" class="clear-btn" onclick="clearSearch()" aria-label="Clear search">✖</button>
+    </div>
+    <div id="noResults" class="no-results">No players found</div>
   </div>
 
   <div id="rankingTable">
@@ -167,100 +187,91 @@
   <div class="footer">Scores are updated as they are submitted within 24 hours</div>
 
   <script>
-  const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGEXcTCNnobUXBajqAgLUi3Jnel1FH1qIwW35HDQqy3SJBVzxgoNEyAXzEyCXOuplrnzsKnpu3kkWM/pub?output=csv';
-  let players = [];
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGEXcTCNnobUXBajqAgLUi3Jnel1FH1qIwW35HDQqy3SJBVzxgoNEyAXzEyCXOuplrnzsKnpu3kkWM/pub?output=csv';
+    let players = [];
 
-  async function fetchData() {
-    try {
-      const response = await fetch(sheetUrl);
-      const data = await response.text();
-      parseCSV(data);
-    } catch (err) {
-      console.error('Error fetching data:', err);
+    async function fetchData() {
+      try {
+        const response = await fetch(sheetUrl);
+        const data = await response.text();
+        parseCSV(data);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      }
     }
-  }
 
-  function parseCSV(csv) {
-    const lines = csv.trim().split('\n');
+    function parseCSV(csv) {
+      const lines = csv.trim().split('\n');
+      players = lines.slice(1)
+        .map(line => {
+          const [name, points] = line.split(',');
+          return { name: name ? name.trim() : '', points: Number(points) };
+        })
+        .filter(player => player.name && player.name.toLowerCase() !== 'substitute');
+      renderTable();
+    }
 
-    players = lines
-      .slice(1)
-      .map(line => {
-        const [name, points] = line.split(',');
-        return {
-          name: name ? name.trim() : '',
-          points: Number(points)
-        };
-      })
-      .filter(player =>
-        player.name !== '' &&
-        player.name.toLowerCase() !== 'substitute'
-      );
+    function renderTable() {
+      const tbody = document.querySelector('#playersTable tbody');
+      tbody.innerHTML = '';
+      if (!players.length) return;
 
-    renderTable();
-  }
+      players.sort((a,b) => b.points - a.points || a.name.localeCompare(b.name));
 
-  function renderTable() {
-    const tbody = document.querySelector('#playersTable tbody');
-    tbody.innerHTML = '';
+      let prevPoints = null;
+      let displayedRank = 1;
 
-    if (players.length === 0) return;
+      players.forEach((player, index) => {
+        if (player.points !== prevPoints) displayedRank = index + 1;
 
-    players.sort((a, b) => {
-      if (b.points === a.points) {
-        return a.name.localeCompare(b.name);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${displayedRank}</td><td>${player.name}</td><td>${player.points}</td>`;
+
+        if (displayedRank <= 40) tr.classList.add('tier1');
+        else if (displayedRank <= 70) tr.classList.add('tier2');
+        else tr.classList.add('tier3');
+
+        tbody.appendChild(tr);
+        prevPoints = player.points;
+      });
+    }
+
+    function filterPlayers() {
+      const input = document.getElementById('searchInput').value.toLowerCase().trim();
+      const rows = document.querySelectorAll('#playersTable tbody tr');
+      const noResults = document.getElementById('noResults');
+      let visibleRows = [];
+
+      rows.forEach(row => {
+        const nameCell = row.cells[1];
+        if (!nameCell) return;
+        const match = nameCell.textContent.toLowerCase().includes(input);
+        row.style.display = match ? '' : 'none';
+        row.classList.remove('highlight');
+        if (match) visibleRows.push(row);
+      });
+
+      if (visibleRows.length === 1) visibleRows[0].classList.add('highlight');
+      noResults.style.display = input && visibleRows.length === 0 ? 'block' : 'none';
+    }
+
+    function handleSearchKeys(event) {
+      const rows = Array.from(document.querySelectorAll('#playersTable tbody tr'))
+        .filter(row => row.style.display !== 'none');
+      if (event.key === 'Enter' && rows.length === 1) {
+        rows[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      return b.points - a.points;
-    });
+      if (event.key === 'Escape') clearSearch();
+    }
 
-    let prevPoints = null;
-    let displayedRank = 1;
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      filterPlayers();
+    }
 
-    players.forEach((player, index) => {
-      if (player.points !== prevPoints) {
-        displayedRank = index + 1;
-      }
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${displayedRank}</td>
-        <td>${player.name}</td>
-        <td>${player.points}</td>
-      `;
-
-      if (displayedRank <= 40) tr.classList.add('tier1');
-      else if (displayedRank <= 70) tr.classList.add('tier2');
-      else tr.classList.add('tier3');
-
-      tbody.appendChild(tr);
-      prevPoints = player.points;
-    });
-  }
-
-  /* 🔍 LIVE FILTERING */
-  function filterPlayers() {
-    const input = document
-      .getElementById('searchInput')
-      .value
-      .toLowerCase()
-      .trim();
-
-    const rows = document.querySelectorAll('#playersTable tbody tr');
-
-    rows.forEach(row => {
-      const name = row.cells[1].textContent.toLowerCase();
-      row.style.display = name.includes(input) ? '' : 'none';
-    });
-  }
-
-  // Initial fetch
-  fetchData();
-
-  // Refresh every 60 seconds
-  setInterval(fetchData, 60000);
-</script>
-
+    // Initial fetch
+    fetchData();
+    setInterval(fetchData, 60000);
+  </script>
 </body>
 </html>
-
-
