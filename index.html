@@ -167,24 +167,24 @@
   <div class="footer">Scores are updated as they are submitted within 24 hours</div>
 
   <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGEXcTCNnobUXBajqAgLUi3Jnel1FH1qIwW35HDQqy3SJBVzxgoNEyAXzEyCXOuplrnzsKnpu3kkWM/pub?output=csv';
-    let players = [];
+  const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGEXcTCNnobUXBajqAgLUi3Jnel1FH1qIwW35HDQqy3SJBVzxgoNEyAXzEyCXOuplrnzsKnpu3kkWM/pub?output=csv';
+  let players = [];
 
-    async function fetchData() {
-      try {
-        const response = await fetch(sheetUrl);
-        const data = await response.text();
-        parseCSV(data);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-      }
+  async function fetchData() {
+    try {
+      const response = await fetch(sheetUrl);
+      const data = await response.text();
+      parseCSV(data);
+    } catch (err) {
+      console.error('Error fetching data:', err);
     }
+  }
 
-     function parseCSV(csv) {
+  function parseCSV(csv) {
     const lines = csv.trim().split('\n');
 
     players = lines
-      .slice(1) // skip header row
+      .slice(1)
       .map(line => {
         const [name, points] = line.split(',');
         return {
@@ -206,7 +206,6 @@
 
     if (players.length === 0) return;
 
-    // Sort by points DESC, then name ASC
     players.sort((a, b) => {
       if (b.points === a.points) {
         return a.name.localeCompare(b.name);
@@ -214,7 +213,6 @@
       return b.points - a.points;
     });
 
-    let rank = 1;
     let prevPoints = null;
     let displayedRank = 1;
 
@@ -230,39 +228,16 @@
         <td>${player.points}</td>
       `;
 
-      // Tier shading based on displayed rank
-      if (displayedRank <= 40) {
-        tr.classList.add('tier1');
-      } else if (displayedRank <= 70) {
-        tr.classList.add('tier2');
-      } else {
-        tr.classList.add('tier3');
-      }
+      if (displayedRank <= 40) tr.classList.add('tier1');
+      else if (displayedRank <= 70) tr.classList.add('tier2');
+      else tr.classList.add('tier3');
 
       tbody.appendChild(tr);
-
       prevPoints = player.points;
     });
   }
 
-    function searchPlayer() {
-      const input = document.getElementById('searchInput').value.toLowerCase();
-      const rows = document.querySelectorAll('#playersTable tbody tr');
-      let found = false;
-
-      rows.forEach(row => row.classList.remove('highlight'));
-
-      players.forEach((player, index) => {
-        if (player.name.toLowerCase() === input) {
-          rows[index].classList.add('highlight');
-          rows[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
-          found = true;
-        }
-      });
-
-      if (!found) alert('Player not found!');
-    }
-
+  /* 🔍 LIVE FILTERING */
   function filterPlayers() {
     const input = document
       .getElementById('searchInput')
@@ -273,22 +248,19 @@
     const rows = document.querySelectorAll('#playersTable tbody tr');
 
     rows.forEach(row => {
-      const nameCell = row.cells[1];
-      if (!nameCell) return;
-
-      const name = nameCell.textContent.toLowerCase();
-
+      const name = row.cells[1].textContent.toLowerCase();
       row.style.display = name.includes(input) ? '' : 'none';
     });
   }
-</script>
-    
-    // Initial fetch
-    fetchData();
 
-    // Refresh every 60 seconds
-    setInterval(fetchData, 60000);
-  </script>
+  // Initial fetch
+  fetchData();
+
+  // Refresh every 60 seconds
+  setInterval(fetchData, 60000);
+</script>
+
 </body>
 </html>
+
 
