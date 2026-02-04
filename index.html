@@ -98,10 +98,47 @@
       margin-top: 20px;
       color: #555;
     }
+
+.header-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.header-banner img {
+  height: 60px;      /* adjust if needed */
+  width: auto;
+}
+
+.header-banner h1 {
+  margin: 0;
+  color: #0f4c81;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Optional: allow wrapping on small screens */
+@media (max-width: 600px) {
+  .header-banner {
+    flex-wrap: wrap;
+  }
+
+  .header-banner h1 {
+    white-space: normal;
+  }
+}
+    
   </style>
 </head>
 <body>
+  
+ <div class="header-banner">
+  <img src="images/Moonshot%20(1).JPG" alt="Moonshot Logo">
   <h1>BSLTC Padel Player Rankings</h1>
+  <img src="images/Terra%20Rossa%20(1).JPG" alt="Terra Rossa Logo">
+</div>
 
   <div class="search-container">
     <input type="text" id="searchInput" placeholder="Enter player name...">
@@ -230,6 +267,7 @@
   </script>
 </body>
 </html>
+
 
 
 
