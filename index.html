@@ -141,8 +141,12 @@
 </div>
 
   <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Enter player name...">
-    <button onclick="searchPlayer()">Search</button>
+  <input
+  type="text"
+  id="searchInput"
+  placeholder="Start typing a player name..."
+  oninput="filterPlayers()">
+
   </div>
 
   <div id="rankingTable">
@@ -259,6 +263,27 @@
       if (!found) alert('Player not found!');
     }
 
+<script>
+  function filterPlayers() {
+    const input = document
+      .getElementById('searchInput')
+      .value
+      .toLowerCase()
+      .trim();
+
+    const rows = document.querySelectorAll('#playersTable tbody tr');
+
+    rows.forEach(row => {
+      const nameCell = row.cells[1];
+      if (!nameCell) return;
+
+      const name = nameCell.textContent.toLowerCase();
+
+      row.style.display = name.includes(input) ? '' : 'none';
+    });
+  }
+</script>
+    
     // Initial fetch
     fetchData();
 
@@ -267,9 +292,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
